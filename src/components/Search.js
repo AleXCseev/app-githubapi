@@ -1,12 +1,24 @@
-import React, { useContext } from "react";
-import { AlertContext } from "../context/alertContext";
+import React, { useContext, useState } from "react";
+import { AlertContext } from "../context/alert/alertContext";
+import { GithubContext } from "../context/github/githubContext";
 
 const Search = () => {
-  const { show } = useContext(AlertContext);
+  const [value, setValue] = useState("");
+  const alert = useContext(AlertContext);
+  const github = useContext(GithubContext);
 
   const onSubmit = (event) => {
-    if (event.key === "Enter") {
-      show("This is alert!");
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    github.clearUsers();
+
+    if (value.trim()) {
+      alert.hide();
+      github.search(value.trim());
+    } else {
+      alert.show("Введите данные пользователя!");
     }
   };
   return (
@@ -16,6 +28,8 @@ const Search = () => {
         className="form-control"
         placeholder="Введите ник пользователя..."
         onKeyPress={onSubmit}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
       ></input>
     </div>
   );
